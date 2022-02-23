@@ -10,20 +10,30 @@ import torch.nn as nn
 from tqdm import tqdm
 from torch.optim import lr_scheduler
 import torch.optim as optim
+from colorama import Fore, Back, Style
+
+
 from models import HappyWhaleModel
+from data.loaders import prepare_loaders
+
+
+sr_ = Style.RESET_ALL
+b_ = Fore.BLUE
 
 class Runner(object):
 
 
-    def __init__(self):
+    def __init__(self, df):
 
         self.model = HappyWhaleModel(CONFIG['model_name'], CONFIG['embedding_size'])
         self.model.to(CONFIG['device'])
+        self.train_loader, self.valid_loader = prepare_loaders(df, fold=0)
+
+        self.criterion = self.create_criterion()
+        self.optimzer, self.scheduler = self.create_optimizer()
 
 
-
-
-    def run_training(self, optimizer, scheduler, device, num_epochs):
+    def run_training(self, num_epochs):
 
 
         run = wandb.init(project='HappyWhale', 
@@ -45,11 +55,9 @@ class Runner(object):
 
         for epoch in range(1, num_epochs + 1):
             gc.collect()
-            train_epoch_loss = self.train_one_epoch(self.model, optimizer, scheduler,
-                                               dataloader=train_loader,
-                                               device=CONFIG['device'], epoch=epoch)
+            train_epoch_loss = self.train_one_epoch(device=CONFIG['device'], epoch=epoch)
 
-            val_epoch_loss = self.valid_one_epoch(model, valid_loader, device=CONFIG['device'],
+            val_epoch_loss = self.valid_one_epoch(device=CONFIG['device'],
                                              epoch=epoch)
 
             history['Train Loss'].append(train_epoch_loss)
@@ -83,11 +91,11 @@ class Runner(object):
 
         return self.model, history
 
-    def criterion(self, outputs, labels):
-        return nn.CrossEntropyLoss()(outputs, labels)
+    def create_criterion(self):
+        return nn.CrossEntropyLoss()
     
-    def optimizer():
-        optimizer = optim.Adam(model.parameters(), lr=CONFIG['learning_rate'], 
+    def create_optimizer(self):
+        optimizer = optim.Adam(self.model.parameters(), lr=CONFIG['learning_rate'], 
                             weight_decay=CONFIG['weight_decay'])
         scheduler = self.fetch_scheduler(optimizer)  
 
@@ -105,33 +113,33 @@ class Runner(object):
             
         return scheduler
 
-    def train_one_epoch(self, model, optimizer, scheduler, dataloader, device, epoch):
-        model.train()
+    def train_one_epoch(self, device, epoch):
+        self.model.train()
 
         dataset_size = 0
         running_loss = 0.0
 
-        bar = tqdm(enumerate(dataloader), total=len(dataloader))
+        bar = tqdm(enumerate(self.train_loader), total=len(self.train_loader))
         for step, data in bar:
             images = data['image'].to(device, dtype=torch.float)
             labels = data['label'].to(device, dtype=torch.long)
 
             batch_size = images.size(0)
 
-            outputs = model(images, labels)
-            loss = criterion(outputs, labels)
+            outputs = self.model(images, labels)
+            loss = self.criterion(outputs, labels)
             loss = loss / CONFIG['n_accumulate']
 
             loss.backward()
 
             if (step + 1) % CONFIG['n_accumulate'] == 0:
-                optimizer.step()
+                self.optimizer.step()
 
                 # zero the parameter gradients
-                optimizer.zero_grad()
+                self.optimizer.zero_grad()
 
-                if scheduler is not None:
-                    scheduler.step()
+                if self.scheduler is not None:
+                    self.scheduler.step()
 
             running_loss += (loss.item() * batch_size)
             dataset_size += batch_size
@@ -139,27 +147,27 @@ class Runner(object):
             epoch_loss = running_loss / dataset_size
 
             bar.set_postfix(Epoch=epoch, Train_Loss=epoch_loss,
-                            LR=optimizer.param_groups[0]['lr'])
+                            LR=self.optimizer.param_groups[0]['lr'])
         gc.collect()
 
         return epoch_loss
 
     @torch.inference_mode()
-    def valid_one_epoch(model, dataloader, device, epoch):
-        model.eval()
+    def valid_one_epoch(self, device, epoch):
+        self.model.eval()
 
         dataset_size = 0
         running_loss = 0.0
 
-        bar = tqdm(enumerate(dataloader), total=len(dataloader))
+        bar = tqdm(enumerate(self.valid_loader), total=len(self.valid_loader))
         for step, data in bar:
             images = data['image'].to(device, dtype=torch.float)
             labels = data['label'].to(device, dtype=torch.long)
 
             batch_size = images.size(0)
 
-            outputs = model(images, labels)
-            loss = criterion(outputs, labels)
+            outputs = self.model(images, labels)
+            loss = self.criterion(outputs, labels)
 
             running_loss += (loss.item() * batch_size)
             dataset_size += batch_size
@@ -167,7 +175,7 @@ class Runner(object):
             epoch_loss = running_loss / dataset_size
 
             bar.set_postfix(Epoch=epoch, Valid_Loss=epoch_loss,
-                            LR=optimizer.param_groups[0]['lr'])
+                            LR=self.optimizer.param_groups[0]['lr'])
 
         gc.collect()
 
