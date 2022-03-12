@@ -11,7 +11,7 @@ from tqdm import tqdm
 from torch.optim import lr_scheduler
 import torch.optim as optim
 from colorama import Fore, Back, Style
-
+import pandas as pd
 
 from models import HappyWhaleModel
 from data.loaders import prepare_loaders
@@ -21,7 +21,6 @@ sr_ = Style.RESET_ALL
 b_ = Fore.BLUE
 
 class Runner(object):
-
 
     def __init__(self, df):
 
@@ -180,3 +179,9 @@ class Runner(object):
         gc.collect()
 
         return epoch_loss
+
+if __name__ == '__main__':
+    dataset_path = '/content/dataset.csv'
+    df = pd.read_csv(dataset_path)
+    runner = Runner(df)
+    runner.run_training(CONFIG['epochs'])
