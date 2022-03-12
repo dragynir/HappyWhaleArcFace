@@ -1,6 +1,6 @@
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
-from ..config import CONFIG
+from config import CONFIG
 
 
 data_transforms = {

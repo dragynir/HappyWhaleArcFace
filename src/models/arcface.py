@@ -5,7 +5,7 @@ import torch.nn.functional as F
 import math
 import timm
 
-from ..config import CONFIG
+from config import CONFIG
 
 class GeM(nn.Module):
     def __init__(self, p=3, eps=1e-6):

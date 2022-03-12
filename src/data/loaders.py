@@ -1,7 +1,7 @@
-from datasets import HappyWhaleDataset
+from .datasets import HappyWhaleDataset
 from torch.utils.data import DataLoader
-from transformations import data_transforms
-from ..config import CONFIG
+from .transformations import data_transforms
+from config import CONFIG
 
 
 def prepare_loaders(df, fold):
