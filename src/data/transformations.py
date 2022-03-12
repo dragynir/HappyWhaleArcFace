@@ -5,7 +5,7 @@ from config import CONFIG
 
 data_transforms = {
     "train": A.Compose([
-        A.Resize(CONFIG['img_size'], CONFIG['img_size']),
+        A.Resize(CONFIG['img_height'], CONFIG['img_width']),
         A.ShiftScaleRotate(shift_limit=0.1,
                            scale_limit=0.15,
                            rotate_limit=60,
@@ -30,7 +30,7 @@ data_transforms = {
         ToTensorV2()], p=1.),
 
     "valid": A.Compose([
-        A.Resize(CONFIG['img_size'], CONFIG['img_size']),
+        A.Resize(CONFIG['img_height'], CONFIG['img_width']),
         A.Normalize(
             mean=[0.485, 0.456, 0.406],
             std=[0.229, 0.224, 0.225],
