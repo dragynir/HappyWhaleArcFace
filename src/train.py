@@ -29,7 +29,7 @@ class Runner(object):
         self.train_loader, self.valid_loader = prepare_loaders(df, fold=0)
 
         self.criterion = self.create_criterion()
-        self.optimzer, self.scheduler = self.create_optimizer()
+        self.optimizer, self.scheduler = self.create_optimizer()
 
 
     def run_training(self, num_epochs):
