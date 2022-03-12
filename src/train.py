@@ -12,6 +12,7 @@ from torch.optim import lr_scheduler
 import torch.optim as optim
 from colorama import Fore, Back, Style
 import pandas as pd
+import os
 
 from models import HappyWhaleModel
 from data.loaders import prepare_loaders
@@ -72,7 +73,7 @@ class Runner(object):
                 best_epoch_loss = val_epoch_loss
                 run.summary["Best Loss"] = best_epoch_loss
                 best_model_wts = copy.deepcopy(self.model.state_dict())
-                PATH = "Loss{:.4f}_epoch{:.0f}.bin".format(best_epoch_loss, epoch)
+                PATH = os.path.join(CONFIG['checkpoint_path'] ,"Loss{:.4f}_epoch{:.0f}.bin".format(best_epoch_loss, epoch))
                 torch.save(self.model.state_dict(), PATH)
                 # Save a model file from the current directory
                 print(f"Model Saved{sr_}")
