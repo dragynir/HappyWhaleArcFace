@@ -1,10 +1,10 @@
 import torch
 
 CONFIG = {"seed": 2022,
-          "epochs": 20,
+          "epochs": 50,
           "img_width": 512,
           "img_height": 256,
-          "model_name": "tf_efficientnet_b0_ns",
+          "model_name": "tf_efficientnet_b3_ns",
           "num_classes": 15549,
           "embedding_size": 512,
           "train_batch_size": 128,
