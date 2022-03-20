@@ -28,10 +28,10 @@ class HappyWhaleDataset(Dataset):
                 pass
             else:
                 left, top, right, bottom = map(int, bbox)
-                left = max(0, left)
-                top = max(0, top)
-                right = min(img.shape[1], right)
-                bottom = min(img.shape[0], bottom)
+                # left = max(0, left)
+                # top = max(0, top)
+                # right = min(img.shape[1], right)
+                # bottom = min(img.shape[0], bottom)
                 img = img[top:bottom, left:right]
 
         label = self.labels[index]
