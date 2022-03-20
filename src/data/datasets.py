@@ -22,12 +22,16 @@ class HappyWhaleDataset(Dataset):
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
         if self.bboxes is not None:
-            
+
             bbox  = self.bboxes[index]
             if any(map(lambda x: x == -1, bbox)):
                 pass
             else:
                 left, top, right, bottom = map(int, bbox)
+                left = max(0, left)
+                top = max(0, top)
+                right = min(img.shape[1], right)
+                bottom = min(img.shape[0], bottom)
                 img = img[top:bottom, left:right]
 
         label = self.labels[index]
