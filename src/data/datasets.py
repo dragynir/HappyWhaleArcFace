@@ -26,7 +26,7 @@ class HappyWhaleDataset(Dataset):
             if any(map(lambda x: x == -1, bbox)):
                 pass
             else:
-                left, top, right, bottom = bbox
+                left, top, right, bottom = map(int, bbox)
                 img = img[top:bottom, left:right]
 
         label = self.labels[index]
