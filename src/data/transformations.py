@@ -2,7 +2,6 @@ import albumentations as A
 from albumentations.pytorch import ToTensorV2
 from config import CONFIG
 
-
 data_transforms = {
     "train": A.Compose([
         A.Resize(CONFIG['img_height'], CONFIG['img_width']),
@@ -22,6 +21,7 @@ data_transforms = {
             contrast_limit=(-0.1, 0.1),
             p=0.5
         ),
+        A.Cutout(num_holes=8, max_h_size=16, max_w_size=16),
         A.Normalize(
             mean=[0.485, 0.456, 0.406],
             std=[0.229, 0.224, 0.225],

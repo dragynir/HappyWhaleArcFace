@@ -147,7 +147,7 @@ class Runner(object):
 
             epoch_loss = running_loss / dataset_size
 
-            bar.set_postfix(Epoch=epoch, Train_Loss=epoch_loss,
+            bar.set_postfix(Epoch=epoch, Train_Loss=epoch_loss * CONFIG['n_accumulate'],
                             LR=self.optimizer.param_groups[0]['lr'])
         gc.collect()
 
