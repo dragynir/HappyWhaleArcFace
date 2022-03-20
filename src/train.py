@@ -185,4 +185,8 @@ if __name__ == '__main__':
     dataset_path = '/content/dataset.csv'
     df = pd.read_csv(dataset_path)
     runner = Runner(df)
+    
+    if not os.path.exists(CONFIG['checkpoint_path']):
+        os.mkdir(CONFIG['checkpoint_path'])
+
     runner.run_training(CONFIG['epochs'])
