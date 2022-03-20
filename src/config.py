@@ -22,5 +22,5 @@ CONFIG = {"seed": 2022,
           "m": 0.50,
           "ls_eps": 0.0,
           "easy_margin": False,
-          "checkpoint_path": '/content/drive/MyDrive/HappyWhale/embed_models/exp0',
+          "checkpoint_path": '/content/drive/MyDrive/HappyWhale/embed_models/exp1',
           }
