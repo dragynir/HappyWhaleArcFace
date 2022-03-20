@@ -66,6 +66,7 @@ class Runner(object):
             # Log the metrics
             wandb.log({"Train Loss": train_epoch_loss})
             wandb.log({"Valid Loss": val_epoch_loss})
+            wandb.log({'LR': self.optimizer.param_groups[0]['lr']})
 
             # deep copy the model
             if val_epoch_loss <= best_epoch_loss:
